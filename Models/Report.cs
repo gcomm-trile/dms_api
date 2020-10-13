@@ -7,10 +7,13 @@ namespace dms_api.Models
 {
     public class Report
     {
-        public List<Report_TongHop> tonghop { get; set; }
-        public List<Report_Tuyen> tuyen { get; set; }
-        public List<Report_NVBH> nvbh { get; set; }
+        public List<Report_TongHop> report_tonghop { get; set; }
+        public List<Report_Tuyen> report_tuyen { get; set; }
+        public List<Report_NVBH> report_nvbh { get; set; }
+        public List<province_item> provinces { get; set; }
 
+        public List<Route> routes { get; set; }
+        public List<RouteUser> routes_user { get; internal set; }
     }
     public class Report_TongHop
     {

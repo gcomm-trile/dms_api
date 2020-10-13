@@ -13,39 +13,41 @@ namespace albus_api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class DashboardTongHopController : ControllerBase
+    public class DashboardController : ControllerBase
     {
-        private readonly ILogger<DashboardTongHopController> _logger;
+        private readonly ILogger<DashboardController> _logger;
 
-        public DashboardTongHopController(ILogger<DashboardTongHopController> logger)
+        public DashboardController(ILogger<DashboardController> logger)
         {
             _logger = logger;
         }
 
         [HttpGet()]
-        public async Task<ActionResult<List<Report_TongHop>>> GetItem(DateTime from_date,DateTime to_date)
+        public async Task<ActionResult<Report>> GetItem(DateTime from_date,DateTime to_date)
         {
             string sessionID
               = Request.Headers["Session-ID"];
             ClientServices Services = new ClientServices(sessionID);
-            var query = DataAccess.DataQuery.Create("dms", "rp_report_tonghop", new
+            var query = DataAccess.DataQuery.Create("dms", "ws_report_tonghop", new
             {
                 from_date = from_date.ToString("yyyy-MM-dd HH:mm:ss"),
                 to_date = to_date.ToString("yyyy-MM-dd HH:mm:ss")
             });
-
             var ds = await Services.ExecuteAsync(query);
             if (ds == null)
             {
                 return BadRequest(Services.LastError);
             }
-            else
-            {
-              
-                return ds.Tables[0].ToModel<Report_TongHop>();
-     
-               
-            }
+       
+            var result = new Report();
+            result.report_tonghop = ds.Tables[0].ToModel<Report_TongHop>();
+            result.report_tuyen = ds.Tables[1].ToModel<Report_Tuyen>();
+            result.report_nvbh = ds.Tables[2].ToModel<Report_NVBH>();
+            result.provinces = ds.Tables[3].ToModel<province_item>();
+            result.routes = ds.Tables[4].ToModel<Route>();
+            result.routes_user = ds.Tables[5].ToModel<RouteUser>();
+            return result;
+           
         }
       
 

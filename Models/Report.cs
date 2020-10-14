@@ -39,7 +39,7 @@ namespace dms_api.Models
         public Guid route_id { get; set; }
         public DateTime report_date { get; set; }
         public string full_name { get; set; }
-        public string route { get; set; }
+        public string route_name { get; set; }
         public string province { get; set; }
         public int count_visit { get; set; }
         public int count_store_order { get; set; }

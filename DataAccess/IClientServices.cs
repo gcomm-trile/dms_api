@@ -12,7 +12,7 @@ namespace System
         string LastError { get; }
         Task<DataSet> ExecuteAsync(RequestCollection requests);
         DataSet Execute(RequestCollection requests);
-        object this[string key] { get; set; }
+        
 
     }
 }

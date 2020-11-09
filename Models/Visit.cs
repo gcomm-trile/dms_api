@@ -8,12 +8,25 @@ namespace dms_api.Models
   
     public class Visit
     {
+        public Store store { get; set; }
+
         public Guid id { get; set; }
 
         public string seq { get; set; }
           
         public Guid store_id { get; set; }
-     
+        public string store_name { get; set; }
+        public string store_owner { get; set; }
+        public string store_phone { get; set; }
+        public string store_address { get; set; }
+        public string store_street { get; set; }
+        public string store_ward { get; set; }
+        public string store_district { get; set; }
+        public string store_province { get; set; }
+        public double store_gps_latitude { get; set; }
+        public double store_gps_longitude { get; set; }
+        public bool store_is_active { get; set; }
+
         public bool is_opened { get; set; }
         public string feed_back { get; set; }
         public int duration { get; set; }
@@ -25,8 +38,10 @@ namespace dms_api.Models
         public double location_checkin_lat { get; set; }
         public double location_checkin_long { get; set; }
         public double location_checkout_lat { get; set; }
-        public double location_checkout_long { get; set; }   
+        public double location_checkout_long { get; set; }
 
-        public Store store { get; set; }
+       
+       
+
     }
 }

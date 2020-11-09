@@ -14,11 +14,11 @@ namespace albus_api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class VisitController : ControllerBase
+    public class VisitsController : ControllerBase
     {
-        private readonly ILogger<VisitController> _logger;
+        private readonly ILogger<VisitsController> _logger;
 
-        public VisitController(ILogger<VisitController> logger)
+        public VisitsController(ILogger<VisitsController> logger)
         {
             _logger = logger;
         }

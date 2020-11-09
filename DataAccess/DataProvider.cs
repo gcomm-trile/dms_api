@@ -16,6 +16,9 @@ namespace DataAccess
 
         public static string servername = "gcomm.online";
         //public static string servername = "WIN-4V77H9KRLK8";
+        //public static string servername = "WINDOWS-6VCPU-1";
+
+
         public static DataSet Excute(RequestCollection requests, string session)
         {
 

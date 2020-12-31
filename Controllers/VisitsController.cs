@@ -27,6 +27,10 @@ namespace albus_api.Controllers
 
         public async Task<ActionResult<List<Visit>>> GetItem()
         {
+            if (!Request.Headers.ContainsKey("Session-ID"))
+            {
+                return BadRequest("Token faild");
+            }
             string sessionID
               = Request.Headers["Session-ID"];
             ClientServices Services = new ClientServices(sessionID);

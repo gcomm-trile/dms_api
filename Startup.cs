@@ -17,7 +17,6 @@ namespace albus_api
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-
         }
 
         public IConfiguration Configuration { get; }
@@ -40,9 +39,7 @@ namespace albus_api
             {
                 app.UseDeveloperExceptionPage();
             }
-
             app.UseRouting();
-
             app.UseAuthorization();
             app.UseCors();
             app.UseEndpoints(endpoints =>

@@ -259,7 +259,8 @@ Password=@Dkcnyh20081992;", servername);
 
                 using (SqlDataAdapter dataAdapter = new SqlDataAdapter(cmd))
                 {
-                    var result = new DataSet(); await Task.Run(() => dataAdapter.Fill(result));
+                    var result = new DataSet(); 
+                    await Task.Run(() => dataAdapter.Fill(result));
                     await Task.Run(() => AppendDataSet(response, result));
 
                     //dataAdapter.Fill(result);

@@ -33,15 +33,13 @@ namespace dms_api.Models
         public DateTime created_on { get; set; }
         public string created_by_name { get; set; }
         public Order order { get; set; }
+
         public List<ImageS3> checkin_images { get; set; }
         public List<ImageS3> checkout_images { get; set; }
         public double location_checkin_lat { get; set; }
         public double location_checkin_long { get; set; }
         public double location_checkout_lat { get; set; }
         public double location_checkout_long { get; set; }
-
-       
-       
 
     }
 }

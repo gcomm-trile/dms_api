@@ -65,8 +65,5 @@ namespace albus_api.Controllers
             return result;
 
         }
-
-
-
     }
 }

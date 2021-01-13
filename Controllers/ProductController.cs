@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 namespace albus_api.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("products")]
     public class ProductController : ControllerBase
     {
         private readonly ILogger<ProductController> _logger;
@@ -21,7 +21,27 @@ namespace albus_api.Controllers
         {
             _logger = logger;
         }
+        [HttpGet("stock/{id}")]
+        public async Task<ActionResult<List<Product>>> inventory_products_listAll(string id)
+        {
+            string sessionID
+             = Request.Headers["Session-ID"];
+            ClientServices Services = new ClientServices(sessionID);
+            var query = DataAccess.DataQuery.Create("dms", "ws_inventory_list",new
+            {
+                stock_id=id
+            });
 
+            var ds = await Services.ExecuteAsync(query);
+            if (ds == null)
+            {
+                return BadRequest(Services.LastError);
+            }
+            else
+            {
+                return ds.Tables[0].ToModel<Product>();
+            }
+        }
         [HttpGet()]
         public async Task<ActionResult<List<Product>>> GetItem()
         {

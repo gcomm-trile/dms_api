@@ -41,12 +41,12 @@ namespace albus_api.Controllers
             }
         }
         [HttpGet("purchaseorders")]
-        public async Task<ActionResult<List<PhieuMuaHang>>> inventory_purchase_orders()
+        public async Task<ActionResult<List<PurchaseOrder>>> inventory_purchase_orders_getAll()
         {
             string sessionID
               = Request.Headers["Session-ID"];
             ClientServices Services = new ClientServices(sessionID);
-            var query = DataAccess.DataQuery.Create("dms", "ws_phieu_mua_hang_list");
+            var query = DataAccess.DataQuery.Create("dms", "ws_purchase_orders_list");
 
             var ds = await Services.ExecuteAsync(query);
             if (ds == null)
@@ -55,9 +55,42 @@ namespace albus_api.Controllers
             }
             else
             {
-                return ds.Tables[0].ToModel<PhieuMuaHang>();
+                return ds.Tables[0].ToModel<PurchaseOrder>();
             }
         }
-
+        [HttpGet("purchaseorders/{id}")]
+        public async Task<ActionResult<PurchaseOrder>> inventory_purchase_orders_getId(string id)
+        {
+            string sessionID
+              = Request.Headers["Session-ID"];
+            ClientServices Services = new ClientServices(sessionID);
+            var query = DataAccess.DataQuery.Create("dms", "ws_purchase_orders_get", new
+            {
+                id = id
+            });
+            query += DataAccess.DataQuery.Create("dms", "ws_vendors_list");
+            query += DataAccess.DataQuery.Create("dms", "ws_stocks_list");
+            var ds = await Services.ExecuteAsync(query);
+            if (ds == null)
+            {
+                return BadRequest(Services.LastError);
+            }
+            else
+            {
+                var result = new PurchaseOrder();
+                if (ds.Tables[0].ToModel<PurchaseOrder>().Count>0)
+                {
+                    result = ds.Tables[0].ToModel<PurchaseOrder>()[0];
+                    result.products = ds.Tables[1].ToModel<PurchaseOrderDetail>();
+                  
+                }
+                result.vendors = ds.Tables[2].ToModel<Vendor>();
+                result.stocks = ds.Tables[3].ToModel<Stock>();
+                
+                return result;
+              
+            }
+        }
+       
     }
 }

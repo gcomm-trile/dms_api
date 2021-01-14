@@ -81,7 +81,7 @@ namespace albus_api.Controllers
                 if (ds.Tables[0].ToModel<PurchaseOrder>().Count>0)
                 {
                     result = ds.Tables[0].ToModel<PurchaseOrder>()[0];
-                    result.products = ds.Tables[1].ToModel<PurchaseOrderDetail>();
+                    result.products = ds.Tables[1].ToModel<Product>();
                   
                 }
                 result.vendors = ds.Tables[2].ToModel<Vendor>();
@@ -91,6 +91,40 @@ namespace albus_api.Controllers
               
             }
         }
-       
+        [HttpPost("purchaseorders/add")]
+        public async Task<ActionResult<PurchaseOrder>> inventory_purchase_orders_new(string id,string import_stock_id,
+            DateTime plan_import_date,string ref_document_note,string vendor_id,string note)
+        {
+            string sessionID
+              = Request.Headers["Session-ID"];
+            ClientServices Services = new ClientServices(sessionID);
+            using (var reader = new StreamReader(Request.Body))
+            {
+                var body = reader.ReadToEnd();
+                _logger.LogInformation(body);
+                var query = DataAccess.DataQuery.Create("dms", "ws_purchase_orders_save", new
+                {
+                    id,
+                    import_stock_id,
+                    plan_import_date,
+                    ref_document_note,
+                    note,
+                    vendor_id,
+                    product_json = body
+                }) ;
+                var ds = await Services.ExecuteAsync(query);
+                if (ds == null)
+                {
+                    return Ok(Services.LastError);
+                }
+                else
+                {
+                    return Ok("Ok");
+                }
+                // Do something
+            }
+         
+        }
+
     }
 }

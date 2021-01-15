@@ -80,7 +80,7 @@ namespace albus_api.Controllers
                         name =product.name,
                         description= product.description,
                         unit =product.unit,
-                        price =product.price,
+                        price =product.price_sell,
                         is_active =product.is_active,
                         image_path=product.image_path
                     });

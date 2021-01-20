@@ -125,6 +125,33 @@ namespace albus_api.Controllers
             }
          
         }
+        [HttpPost("purchaseorders/import")]
+        public async Task<ActionResult<PurchaseOrder>> inventory_purchase_orders_import(string id)
+        {
+            string sessionID
+              = Request.Headers["Session-ID"];
+            ClientServices Services = new ClientServices(sessionID);
+            using (var reader = new StreamReader(Request.Body))
+            {
+                var body = reader.ReadToEnd();
+                _logger.LogInformation(body);
+                var query = DataAccess.DataQuery.Create("dms", "ws_purchase_orders_import", new
+                {
+                    id,               
+                    product_json = body
+                });
+                var ds = await Services.ExecuteAsync(query);
+                if (ds == null)
+                {
+                    return Ok(Services.LastError);
+                }
+                else
+                {
+                    return Ok("Ok");
+                }
+                // Do something
+            }
 
+        }
     }
 }

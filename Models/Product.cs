@@ -13,7 +13,7 @@ namespace dms_api.Models
         public string unit { get; set; }
         public string description { get; set; }      
         public Int64 price_sell { get; set; }
-        public Int64 price_imported { get; set; }
+        public Int64 price_order { get; set; }
         public bool is_active { get; set; }
         public int qty_order { get; set; }
         public int qty_imported { get; set; }

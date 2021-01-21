@@ -18,8 +18,12 @@ namespace dms_api.Models
         public int qty_order { get; set; }
         public int qty_imported { get; set; }
         public int qty_remaining { get; set; }
-        public int qty_current_stock { get; set; }
+     
+        public Int64 total_price_avg { get; set; }
         public string image_path { get; set; }
-      
+        public Guid stock_id { get; set; }
+        public string stock_name { get; set; }
+        public int qty_current_stock { get; set; }
+
     }
 }

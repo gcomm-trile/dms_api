@@ -24,6 +24,7 @@ namespace dms_api.Models
         public Guid stock_id { get; set; }
         public string stock_name { get; set; }
         public int qty_current_stock { get; set; }
-
+        public int qty_stock_in { get; set; }
+        public int qty_stock_out { get; set; }
     }
 }

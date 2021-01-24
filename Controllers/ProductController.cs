@@ -43,12 +43,16 @@ namespace albus_api.Controllers
             }
         }
         [HttpGet()]
-        public async Task<ActionResult<List<Product>>> GetItem()
+        public async Task<ActionResult<List<Product>>> GetItem(string stock_id_in = "00000000-0000-0000-0000-000000000000", string stock_id_out = "00000000-0000-0000-0000-000000000000")
         {
            string sessionID 
              = Request.Headers["Session-ID"];     
             ClientServices Services = new ClientServices(sessionID);
-            var query = DataAccess.DataQuery.Create("dms", "ws_products_list");
+            var query = DataAccess.DataQuery.Create("dms", "ws_products_list",new
+            {
+                stock_id_in,
+                stock_id_out
+            });
             var ds = await Services.ExecuteAsync(query);
             if (ds == null)
             {

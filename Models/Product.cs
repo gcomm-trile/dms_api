@@ -17,8 +17,10 @@ namespace dms_api.Models
         public bool is_active { get; set; }
         public int qty_order { get; set; }
         public int qty_imported { get; set; }
-        public int qty_remaining { get; set; }
-     
+        public int qty_remaining { get; set; }     
+        public int qty_out { get; set; }
+        public int qty_in { get; set; }
+
         public Int64 total_price_avg { get; set; }
         public string image_path { get; set; }
         public Guid stock_id { get; set; }

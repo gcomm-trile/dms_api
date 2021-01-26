@@ -18,7 +18,11 @@ namespace dms_api.Models
         public DateTime plan_date { get; set; }
         public string ref_document_note { get; set; }
         public string note { get; set; }
-
+        public int total_qty { get; set; }
+        public bool can_edit { get; set; }
+        public bool can_view { get; set; }
+        public bool can_received { get; set; }
+        public bool can_cancel { get; set; }
         public List<Product> products { get; set; }  
         public List<Stock> in_stocks { get; internal set; }
         public List<Stock> out_stocks { get; internal set; }

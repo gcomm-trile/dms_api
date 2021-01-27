@@ -22,17 +22,20 @@ namespace albus_api.Controllers
             _logger = logger;
         }
 
-        [HttpGet()]
-        public async Task<ActionResult<List<Product>>> GetItem(string stock_id= "00000000-0000-0000-0000-000000000000")
+        [HttpGet("transactions")]
+        public async Task<ActionResult<Transaction>> GetItem(string stock_id= "00000000-0000-0000-0000-000000000000")
         {
             string sessionID
               = Request.Headers["Session-ID"];
             ClientServices Services = new ClientServices(sessionID);
-            var query = DataAccess.DataQuery.Create("dms", "ws_inventory_list",new
+            var query = DataAccess.DataQuery.Create("dms", "ws_transactions_list", new
             {
                 stock_id=stock_id
             });
-           
+            query += DataAccess.DataQuery.Create("dms", "ws_filter_get", new
+            {
+                module= "inventory_transactions"
+             });
             var ds = await Services.ExecuteAsync(query);
             if (ds == null)
             {
@@ -40,7 +43,14 @@ namespace albus_api.Controllers
             }
             else
             {
-                return ds.Tables[0].ToModel<Product>();
+                var result = new Transaction();
+                result.products = ds.Tables[0].ToModel<Product>();
+                result.filters = ds.Tables[1].ToModel<Filter>();
+                foreach(var item in result.filters)
+                {
+                    item.filter_expressions = JsonConvert.DeserializeObject<List<FilterExpression>>(item.expressions);
+                }
+                return result;
             }
         }
         [HttpGet("purchaseorders")]
@@ -352,6 +362,40 @@ namespace albus_api.Controllers
 
             }
         }
+
+        [HttpPost("adjustments/dieuchinh")]
+        public async Task<ActionResult> inventory_adjustments_dieuchinh(
+           string id,  string in_stock_id
+       )
+        {
+            string sessionID
+              = Request.Headers["Session-ID"];
+            ClientServices Services = new ClientServices(sessionID);
+            using (var reader = new StreamReader(Request.Body))
+            {
+                var body = reader.ReadToEnd();
+                _logger.LogInformation(body);
+                var query = DataAccess.DataQuery.Create("dms", "ws_adjustments_dieuchinh", new
+                {
+                    id,                
+                    in_stock_id,               
+                    product_json = body         
+                });
+                var ds = await Services.ExecuteAsync(query);
+                if (ds == null)
+                {
+                    return Ok(Services.LastError);
+                }
+                else
+                {
+                    return Ok("Ok");
+                }
+                // Do something
+            }
+
+        }
+
+
     }
 
 }

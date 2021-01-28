@@ -10,6 +10,7 @@ namespace dms_api.Models
         public List<Product> products { get; set; }
 
         public List<Filter> filters { get; set; }
+        public List<Stock> stocks { get;  set; }
     }
 
 

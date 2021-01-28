@@ -22,36 +22,46 @@ namespace albus_api.Controllers
             _logger = logger;
         }
 
-        [HttpGet("transactions")]
-        public async Task<ActionResult<Transaction>> GetItem(string stock_id= "00000000-0000-0000-0000-000000000000")
+        [HttpPost("transactions")]
+        public async Task<ActionResult<Transaction>> GetItem()
         {
             string sessionID
               = Request.Headers["Session-ID"];
             ClientServices Services = new ClientServices(sessionID);
-            var query = DataAccess.DataQuery.Create("dms", "ws_transactions_list", new
+            using (var reader = new StreamReader(Request.Body))
             {
-                stock_id=stock_id
-            });
-            query += DataAccess.DataQuery.Create("dms", "ws_filter_get", new
-            {
-                module= "inventory_transactions"
-             });
-            var ds = await Services.ExecuteAsync(query);
-            if (ds == null)
-            {
-                return BadRequest(Services.LastError);
-            }
-            else
-            {
-                var result = new Transaction();
-                result.products = ds.Tables[0].ToModel<Product>();
-                result.filters = ds.Tables[1].ToModel<Filter>();
-                foreach(var item in result.filters)
+                var body = reader.ReadToEnd();
+                _logger.LogInformation(body);
+                var query = DataAccess.DataQuery.Create("dms", "ws_transactions_list", new
                 {
-                    item.filter_expressions = JsonConvert.DeserializeObject<List<FilterExpression>>(item.expressions);
+                    filter_expression= body
+                });
+                query += DataAccess.DataQuery.Create("dms", "ws_filter_get", new
+                {
+                    module = "inventory_transactions"
+                });
+                query += DataAccess.DataQuery.Create("dms", "ws_stocks_list_by_permission");
+                var ds = await Services.ExecuteAsync(query);
+                if (ds == null)
+                {
+                    return BadRequest(Services.LastError);
                 }
-                return result;
+                else
+                {
+                    var result = new Transaction();
+                    result.products = ds.Tables[0].ToModel<Product>();
+                    result.filters = ds.Tables[1].ToModel<Filter>();
+                    result.stocks = ds.Tables[2].ToModel<Stock>();
+                    foreach (var item in result.filters)
+                    {
+                        item.filter_expressions = JsonConvert.DeserializeObject<List<FilterExpression>>(item.expressions);
+                    }
+                    return result;
+                }
+                // Do something
             }
+
+         
         }
         [HttpGet("purchaseorders")]
         public async Task<ActionResult<List<PurchaseOrder>>> inventory_purchase_orders_getAll()

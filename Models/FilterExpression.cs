@@ -11,6 +11,9 @@ namespace dms_api.Models
         public string field_name { get; set; }
         public string logic { get; set; }
         public string value { get; set; }
-       
+        public string field_name_display { get; set; }
+        public string logic_display { get; set; }
+        public string value_display { get; set; }
+
     }
 }

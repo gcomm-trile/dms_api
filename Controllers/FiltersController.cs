@@ -22,7 +22,39 @@ namespace albus_api.Controllers
             _logger = logger;
         }
 
-       
+        [HttpGet()]
+        public async Task<ActionResult<List<Filter>>> Get(string module)
+        {
+            string sessionID
+             = Request.Headers["Session-ID"];
+            try
+            {
+                ClientServices Services = new ClientServices(sessionID);
+                var query = DataAccess.DataQuery.Create("dms", "ws_filter_get", new
+                {
+                    module = module
+                });
+                var ds = await Services.ExecuteAsync(query);
+                if (ds == null)
+                {
+                    return BadRequest(Services.LastError);
+                }
+                else
+                {
+                    var result = new List<Filter>();
+                    result = ds.Tables[0].ToModel<Filter>();
+                    foreach (var item in result)
+                    {
+                        item.filter_expressions = JsonConvert.DeserializeObject<List<FilterExpression>>(item.expressions);
+                    }
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         [HttpPost()]
         public async Task<ActionResult<List<Filter>>> PostItem(string module,string id,string name)
         {
@@ -41,7 +73,6 @@ namespace albus_api.Controllers
                         id,
                         name,
                         filter_expression =body
-
                     });
                     query += DataAccess.DataQuery.Create("dms", "ws_filter_get", new
                     {
@@ -54,18 +85,15 @@ namespace albus_api.Controllers
                     }
                     else
                     {
-                        var result = ds.Tables[1].ToModel<Filter>();
-                       
+                        var result = ds.Tables[1].ToModel<Filter>();                      
                         foreach (var item in result)
                         {
                             item.filter_expressions = JsonConvert.DeserializeObject<List<FilterExpression>>(item.expressions);
                         }
-                        return result;
-                      
+                        return result;                     
                     }                 
                     // Do something
-                }
-             
+                }             
             }
             catch(Exception ex)
             {

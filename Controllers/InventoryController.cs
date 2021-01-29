@@ -51,11 +51,12 @@ namespace albus_api.Controllers
                     var result = new Transaction();
                     result.products = ds.Tables[0].ToModel<Product>();
                     result.filters = ds.Tables[1].ToModel<Filter>();
-                    result.stocks = ds.Tables[2].ToModel<Stock>();
                     foreach (var item in result.filters)
                     {
                         item.filter_expressions = JsonConvert.DeserializeObject<List<FilterExpression>>(item.expressions);
                     }
+                    result.stocks = ds.Tables[2].ToModel<Stock>();
+                   
                     return result;
                 }
                 // Do something
@@ -323,87 +324,7 @@ namespace albus_api.Controllers
             }
 
         }
-        [HttpGet("adjustments")]
-        public async Task<ActionResult<List<Adjustment>>> inventory_adjustments_getAll()
-        {
-            string sessionID
-              = Request.Headers["Session-ID"];
-            ClientServices Services = new ClientServices(sessionID);
-            var query = DataAccess.DataQuery.Create("dms", "ws_adjustments_list");
-
-            var ds = await Services.ExecuteAsync(query);
-            if (ds == null)
-            {
-                return BadRequest(Services.LastError);
-            }
-            else
-            {
-                return ds.Tables[0].ToModel<Adjustment>();
-            }
-        }
-
-        [HttpGet("adjustments/{id}")]
-        public async Task<ActionResult<Adjustment>> inventory_adjustments_getId(string id)
-        {
-            string sessionID
-              = Request.Headers["Session-ID"];
-            ClientServices Services = new ClientServices(sessionID);
-            var query = DataAccess.DataQuery.Create("dms", "ws_adjustments_get", new
-            {
-                id = id
-            });          
-            query += DataAccess.DataQuery.Create("dms", "ws_stocks_list_by_permission");
-            var ds = await Services.ExecuteAsync(query);
-            if (ds == null)
-            {
-                return BadRequest(Services.LastError);
-            }
-            else
-            {
-                var result = new Adjustment();
-                if (ds.Tables[0].ToModel<Adjustment>().Count > 0)
-                {
-                    result = ds.Tables[0].ToModel<Adjustment>()[0];
-                    result.products = ds.Tables[1].ToModel<Product>();
-                }             
-                result.stocks = ds.Tables[2].ToModel<Stock>();
-
-                return result;
-
-            }
-        }
-
-        [HttpPost("adjustments/dieuchinh")]
-        public async Task<ActionResult> inventory_adjustments_dieuchinh(
-           string id,  string in_stock_id
-       )
-        {
-            string sessionID
-              = Request.Headers["Session-ID"];
-            ClientServices Services = new ClientServices(sessionID);
-            using (var reader = new StreamReader(Request.Body))
-            {
-                var body = reader.ReadToEnd();
-                _logger.LogInformation(body);
-                var query = DataAccess.DataQuery.Create("dms", "ws_adjustments_dieuchinh", new
-                {
-                    id,                
-                    in_stock_id,               
-                    product_json = body         
-                });
-                var ds = await Services.ExecuteAsync(query);
-                if (ds == null)
-                {
-                    return Ok(Services.LastError);
-                }
-                else
-                {
-                    return Ok("Ok");
-                }
-                // Do something
-            }
-
-        }
+     
 
 
     }

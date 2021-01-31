@@ -22,13 +22,16 @@ namespace albus_api.Controllers.Invenroty
             _logger = logger;
         }
       
-        [HttpGet()]
-        public async Task<ActionResult<AdjustmentList>> inventory_adjustments_getAll()
+      
+        public async Task<ActionResult<AdjustmentList>> inventory_adjustments_getAll(string filter="[]")
         {
             string sessionID
               = Request.Headers["Session-ID"];
             ClientServices Services = new ClientServices(sessionID);
-            var query = DataAccess.DataQuery.Create("dms", "ws_adjustments_list");
+            var query = DataAccess.DataQuery.Create("dms", "ws_adjustments_list",new
+            {
+                filter_expression=filter
+            });
             query += DataAccess.DataQuery.Create("dms", "ws_stocks_list_by_permission");
             query += DataAccess.DataQuery.Create("dms", "ws_filter_get", new
             {

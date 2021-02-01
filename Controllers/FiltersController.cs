@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,6 +21,109 @@ namespace albus_api.Controllers
         public FiltersController(ILogger<FiltersController> logger)
         {
             _logger = logger;
+        }
+
+
+        [HttpGet("values")]
+        public async Task<ActionResult<List<FilterFieldNameValues>>> GetValues(string module)
+        {
+            var result =new List<FilterFieldNameValues>();
+            string sessionID
+             = Request.Headers["Session-ID"];
+            try
+            {
+                ClientServices Services = new ClientServices(sessionID);
+
+                if(module=="inventory_adjustments")
+                {
+                    var query = DataAccess.DataQuery.Create("dms", "ws_stocks_list_by_permission");
+                     query += DataAccess.DataQuery.Create("dms", "ws_categories_get",new
+                     {
+                         module= "adjustment_reasons"
+                     });
+                    var ds = await Services.ExecuteAsync(query);
+                    if (ds == null)
+                    {
+                        return BadRequest(Services.LastError);
+                    }
+                    else
+                    {
+                        var stocks = new List<FilterValue>();
+                        foreach(DataRow row in ds.Tables[0].Rows)
+                        {
+                            var stock = new FilterValue();
+                            stock.id = row["id"].ToString();
+                            stock.value= row["name"].ToString();
+                            stocks.Add(stock);
+                        }    
+                        result.Add(new FilterFieldNameValues(){
+                            field_name="stock_id",
+                            filter_values = stocks
+                        });
+
+                        var adjustment_reasons = new List<FilterValue>();
+                        foreach (DataRow row in ds.Tables[1].Rows)
+                        {
+                            var item = new FilterValue();
+                            item.id = row["id"].ToString();
+                            item.value = row["name"].ToString();
+                            adjustment_reasons.Add(item);
+                        }
+                        result.Add(new FilterFieldNameValues()
+                        {
+                            field_name = "adjustment_reason_id",
+                            filter_values = adjustment_reasons
+                        });
+
+                    }
+                }
+                if (module == "inventory_transactions")
+                {
+                    var query = DataAccess.DataQuery.Create("dms", "ws_stocks_list_by_permission");
+                    query += DataAccess.DataQuery.Create("dms", "ws_products_list");
+                    var ds = await Services.ExecuteAsync(query);
+                    if (ds == null)
+                    {
+                        return BadRequest(Services.LastError);
+                    }
+                    else
+                    {
+                        var stocks = new List<FilterValue>();
+                        foreach (DataRow row in ds.Tables[0].Rows)
+                        {
+                            var item = new FilterValue();
+                            item.id = row["id"].ToString();
+                            item.value = row["name"].ToString();
+                            stocks.Add(item);
+                        }
+
+                        var products = new List<FilterValue>();
+                        foreach (DataRow row in ds.Tables[1].Rows)
+                        {
+                            var item = new FilterValue();
+                            item.id = row["id"].ToString();
+                            item.value = row["name"].ToString();
+                            products.Add(item);
+                        }
+                        result.Add(new FilterFieldNameValues()
+                        {
+                            field_name = "stock_id",
+                            filter_values = stocks
+                        });
+                        result.Add(new FilterFieldNameValues()
+                        {
+                            field_name = "product_id",
+                            filter_values = products
+                        });
+
+                    }
+                }
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet()]

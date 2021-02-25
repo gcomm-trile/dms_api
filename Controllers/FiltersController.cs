@@ -118,6 +118,46 @@ namespace albus_api.Controllers
 
                     }
                 }
+                if (module == "inventory_purchase_orders")
+                {
+                    var query = DataAccess.DataQuery.Create("dms", "ws_stocks_list_by_permission");
+                    query += DataAccess.DataQuery.Create("dms", "ws_purchase_order_status_list");
+                    var ds = await Services.ExecuteAsync(query);
+                    if (ds == null)
+                    {
+                        return BadRequest(Services.LastError);
+                    }
+                    else
+                    {
+                        var stocks = new List<FilterValue>();
+                        foreach (DataRow row in ds.Tables[0].Rows)
+                        {
+                            var stock = new FilterValue();
+                            stock.id = row["id"].ToString();
+                            stock.value = row["name"].ToString();
+                            stocks.Add(stock);
+                        }
+                        result.Add(new FilterFieldNameValues()
+                        {
+                            field_name = "stock_id",
+                            filter_values = stocks
+                        });
+
+                        var purchase_order_status = new List<FilterValue>();
+                        foreach (DataRow row in ds.Tables[1].Rows)
+                        {
+                            var item = new FilterValue();
+                            item.id = row["id"].ToString();
+                            item.value = row["name"].ToString();
+                            purchase_order_status.Add(item);
+                        }
+                        result.Add(new FilterFieldNameValues()
+                        {
+                            field_name = "purchase_order_status_id",
+                            filter_values = purchase_order_status
+                        });
+                    }
+                }
                 return result;
             }
             catch (Exception ex)

@@ -23,7 +23,7 @@ namespace albus_api.Controllers.Invenroty
         }
       
       
-        public async Task<ActionResult<AdjustmentList>> inventory_adjustments_getAll(string searchText="",string filter="[]")
+        public async Task<ActionResult<List<Adjustment>>> inventory_adjustments_getAll(string searchText="",string filter="[]")
         {
             string sessionID
               = Request.Headers["Session-ID"];
@@ -33,27 +33,16 @@ namespace albus_api.Controllers.Invenroty
                 filter_expression=filter,
                 search_text=searchText
             });
-            query += DataAccess.DataQuery.Create("dms", "ws_stocks_list_by_permission");
-            query += DataAccess.DataQuery.Create("dms", "ws_filter_get", new
-            {
-                module = "inventory_transactions"
-            });
+          
             var ds = await Services.ExecuteAsync(query);
             if (ds == null)
             {
                 return BadRequest(Services.LastError);
             }
             else
-            {
-                var result =new AdjustmentList();
-                result.adjustments= ds.Tables[0].ToModel<Adjustment>();
-                result.stocks = ds.Tables[1].ToModel<Stock>();
-                result.filters = ds.Tables[2].ToModel<Filter>();
-                foreach (var item in result.filters)
-                {
-                    item.filter_expressions = JsonConvert.DeserializeObject<List<FilterExpression>>(item.expressions);
-                }
-                return result;
+            {              
+                return  ds.Tables[0].ToModel<Adjustment>();               
+ 
             }
         }
 

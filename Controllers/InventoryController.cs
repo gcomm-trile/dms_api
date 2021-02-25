@@ -64,118 +64,58 @@ namespace albus_api.Controllers
 
          
         }
-        [HttpGet("purchaseorders")]
-        public async Task<ActionResult<List<PurchaseOrder>>> inventory_purchase_orders_getAll()
-        {
-            string sessionID
-              = Request.Headers["Session-ID"];
-            ClientServices Services = new ClientServices(sessionID);
-            var query = DataAccess.DataQuery.Create("dms", "ws_purchase_orders_list");
+        //[HttpGet("purchaseorders")]
+        //public async Task<ActionResult<List<PurchaseOrder>>> inventory_purchase_orders_getAll()
+        //{
+        //    string sessionID
+        //      = Request.Headers["Session-ID"];
+        //    ClientServices Services = new ClientServices(sessionID);
+        //    var query = DataAccess.DataQuery.Create("dms", "ws_purchase_orders_list");
 
-            var ds = await Services.ExecuteAsync(query);
-            if (ds == null)
-            {
-                return BadRequest(Services.LastError);
-            }
-            else
-            {
-                return ds.Tables[0].ToModel<PurchaseOrder>();
-            }
-        }
-        [HttpGet("purchaseorders/{id}")]
-        public async Task<ActionResult<PurchaseOrder>> inventory_purchase_orders_getId(string id)
-        {
-            string sessionID
-              = Request.Headers["Session-ID"];
-            ClientServices Services = new ClientServices(sessionID);
-            var query = DataAccess.DataQuery.Create("dms", "ws_purchase_orders_get", new
-            {
-                id = id
-            });
-            query += DataAccess.DataQuery.Create("dms", "ws_vendors_list");
-            query += DataAccess.DataQuery.Create("dms", "ws_stocks_list");
-            var ds = await Services.ExecuteAsync(query);
-            if (ds == null)
-            {
-                return BadRequest(Services.LastError);
-            }
-            else
-            {
-                var result = new PurchaseOrder();
-                if (ds.Tables[0].ToModel<PurchaseOrder>().Count>0)
-                {
-                    result = ds.Tables[0].ToModel<PurchaseOrder>()[0];
-                    result.products = ds.Tables[1].ToModel<Product>();
+        //    var ds = await Services.ExecuteAsync(query);
+        //    if (ds == null)
+        //    {
+        //        return BadRequest(Services.LastError);
+        //    }
+        //    else
+        //    {
+        //        return ds.Tables[0].ToModel<PurchaseOrder>();
+        //    }
+        //}
+        //[HttpGet("purchaseorders/{id}")]
+        //public async Task<ActionResult<PurchaseOrder>> inventory_purchase_orders_getId(string id)
+        //{
+        //    string sessionID
+        //      = Request.Headers["Session-ID"];
+        //    ClientServices Services = new ClientServices(sessionID);
+        //    var query = DataAccess.DataQuery.Create("dms", "ws_purchase_orders_get", new
+        //    {
+        //        id = id
+        //    });
+        //    query += DataAccess.DataQuery.Create("dms", "ws_vendors_list");
+        //    query += DataAccess.DataQuery.Create("dms", "ws_stocks_list");
+        //    var ds = await Services.ExecuteAsync(query);
+        //    if (ds == null)
+        //    {
+        //        return BadRequest(Services.LastError);
+        //    }
+        //    else
+        //    {
+        //        var result = new PurchaseOrder();
+        //        if (ds.Tables[0].ToModel<PurchaseOrder>().Count>0)
+        //        {
+        //            result = ds.Tables[0].ToModel<PurchaseOrder>()[0];
+        //            result.products = ds.Tables[1].ToModel<Product>();
                   
-                }
-                result.vendors = ds.Tables[2].ToModel<Vendor>();
-                result.stocks = ds.Tables[3].ToModel<Stock>();
+        //        }
+        //        result.vendors = ds.Tables[2].ToModel<Vendor>();
+        //        result.stocks = ds.Tables[3].ToModel<Stock>();
                 
-                return result;
+        //        return result;
               
-            }
-        }
-        [HttpPost("purchaseorders/add")]
-        public async Task<ActionResult<PurchaseOrder>> inventory_purchase_orders_new(string id,string in_stock_id,
-            DateTime plan_date,string vendor_id)
-        {
-            string sessionID
-              = Request.Headers["Session-ID"];
-            ClientServices Services = new ClientServices(sessionID);
-            using (var reader = new StreamReader(Request.Body))
-            {
-                var body = reader.ReadToEnd();
-                _logger.LogInformation(body);
-                var query = DataAccess.DataQuery.Create("dms", "ws_purchase_orders_save", new
-                {
-                    id,
-                    in_stock_id,
-                    plan_date,                  
-                    vendor_id,
-                    product_json = body
-                }) ;
-                var ds = await Services.ExecuteAsync(query);
-                if (ds == null)
-                {
-                    return Ok(Services.LastError);
-                }
-                else
-                {
-                    return Ok("Ok");
-                }
-                // Do something
-            }
-         
-        }
-        [HttpPost("purchaseorders/nhanhang")]
-        public async Task<ActionResult<PurchaseOrder>> inventory_purchase_orders_nhanhang(string id)
-        {
-            string sessionID
-              = Request.Headers["Session-ID"];
-            ClientServices Services = new ClientServices(sessionID);
-            using (var reader = new StreamReader(Request.Body))
-            {
-                var body = reader.ReadToEnd();
-                _logger.LogInformation(body);
-                var query = DataAccess.DataQuery.Create("dms", "ws_purchase_orders_nhanhang", new
-                {
-                    id,               
-                    product_json = body
-                });
-                var ds = await Services.ExecuteAsync(query);
-                if (ds == null)
-                {
-                    return Ok(Services.LastError);
-                }
-                else
-                {
-                    return Ok("Ok");
-                }
-                // Do something
-            }
-
-        }
-
+        //    }
+        //}
+        
 
         [HttpGet("transfers")]
         public async Task<ActionResult<List<Transfer>>> inventory_transfers_getAll()

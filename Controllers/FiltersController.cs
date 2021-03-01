@@ -158,6 +158,58 @@ namespace albus_api.Controllers
                         });
                     }
                 }
+                if (module == "orders")
+                {
+                    var query = DataAccess.DataQuery.Create("dms", "ws_stocks_list_by_permission");
+                    //query += DataAccess.DataQuery.Create("dms", "ws_purchase_order_status_list");
+                    var ds = await Services.ExecuteAsync(query);
+                    if (ds == null)
+                    {
+                        return BadRequest(Services.LastError);
+                    }
+                    else
+                    {
+                        var stocks = new List<FilterValue>();
+                        foreach (DataRow row in ds.Tables[0].Rows)
+                        {
+                            var stock = new FilterValue();
+                            stock.id = row["id"].ToString();
+                            stock.value = row["name"].ToString();
+                            stocks.Add(stock);
+                        }
+                        result.Add(new FilterFieldNameValues()
+                        {
+                            field_name = "stock_id",
+                            filter_values = stocks
+                        });                        
+                    }
+                }
+                if (module == "visits")
+                {
+                    var query = DataAccess.DataQuery.Create("dms", "ws_stores_list");
+                    //query += DataAccess.DataQuery.Create("dms", "ws_purchase_order_status_list");
+                    var ds = await Services.ExecuteAsync(query);
+                    if (ds == null)
+                    {
+                        return BadRequest(Services.LastError);
+                    }
+                    else
+                    {
+                        var stores = new List<FilterValue>();
+                        foreach (DataRow row in ds.Tables[0].Rows)
+                        {
+                            var store = new FilterValue();
+                            store.id = row["id"].ToString();
+                            store.value = row["name"].ToString();
+                            stores.Add(store);
+                        }
+                        result.Add(new FilterFieldNameValues()
+                        {
+                            field_name = "store_id",
+                            filter_values = stores
+                        });
+                    }
+                }
                 return result;
             }
             catch (Exception ex)

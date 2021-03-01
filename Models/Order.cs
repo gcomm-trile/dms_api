@@ -7,10 +7,10 @@ namespace dms_api.Models
 {
     public class Order
     {
-        public string seq { get; set; }
-        public string id { get; set; }
+        public string no { get; set; }
+        public Guid id { get; set; }
 
-        public string store_id { get; set; }
+        public Guid store_id { get; set; }
         public string store_name { get; set; }
         public string store_address { get; set; }
 

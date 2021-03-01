@@ -12,7 +12,7 @@ namespace dms_api.Models
 
         public Guid id { get; set; }
 
-        public string seq { get; set; }
+        public string no { get; set; }
           
         public Guid store_id { get; set; }
         public string store_name { get; set; }

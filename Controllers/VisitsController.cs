@@ -25,7 +25,7 @@ namespace albus_api.Controllers
 
         [HttpGet()]
 
-        public async Task<ActionResult<List<Visit>>> GetItem()
+        public async Task<ActionResult<List<Visit>>> getAll(string searchText = "", string filter = "[]")
         {
             if (!Request.Headers.ContainsKey("Session-ID"))
             {
@@ -34,7 +34,11 @@ namespace albus_api.Controllers
             string sessionID
               = Request.Headers["Session-ID"];
             ClientServices Services = new ClientServices(sessionID);
-            var query = DataAccess.DataQuery.Create("dms", "ws_visits_list");
+            var query = DataAccess.DataQuery.Create("dms", "ws_visits_list",new
+            {
+                filter_expression = filter,
+                search_text = searchText
+            });
           
             var ds = await Services.ExecuteAsync(query);
             if (ds == null)

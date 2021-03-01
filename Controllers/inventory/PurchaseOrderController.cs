@@ -55,7 +55,7 @@ namespace albus_api.Controllers.Invenroty
                 id = id
             });
             query += DataAccess.DataQuery.Create("dms", "ws_vendors_list");
-            query += DataAccess.DataQuery.Create("dms", "ws_stocks_list");
+            query += DataAccess.DataQuery.Create("dms", "ws_stocks_list_by_permission");
             var ds = await Services.ExecuteAsync(query);
             if (ds == null)
             {

@@ -25,7 +25,7 @@ namespace albus_api.Controllers
 
         [HttpGet()]
 
-        public async Task<ActionResult<List<Visit>>> GetItem()
+        public async Task<ActionResult<List<Visit>>> getAll(string searchText = "", string filter = "[]")
         {
             if (!Request.Headers.ContainsKey("Session-ID"))
             {
@@ -34,8 +34,12 @@ namespace albus_api.Controllers
             string sessionID
               = Request.Headers["Session-ID"];
             ClientServices Services = new ClientServices(sessionID);
-            var query = DataAccess.DataQuery.Create("dms", "ws_visits_list");
-          
+            var query = DataAccess.DataQuery.Create("dms", "ws_visits_list", new
+            {
+                filter_expression = filter,
+                search_text = searchText
+            });
+
             var ds = await Services.ExecuteAsync(query);
             if (ds == null)
             {
@@ -62,13 +66,13 @@ namespace albus_api.Controllers
             }
 
             var visit = ds.Tables[0].ToModel<Visit>()[0];
-            if (ds.Tables[1].Rows.Count>0)
+            if (ds.Tables[1].Rows.Count > 0)
             {
                 var order = ds.Tables[1].ToModel<Order>()[0];
                 order.products = ds.Tables[2].ToModel<Product>();
                 visit.order = order;
-            }    
-               
+            }
+
             List<ImageS3> image_checkin = new List<ImageS3>();
             List<ImageS3> image_checkout = new List<ImageS3>();
             foreach (DataRow row in ds.Tables[3].Rows)

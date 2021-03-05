@@ -5,15 +5,20 @@ using System.Threading.Tasks;
 
 namespace dms_api.Models
 {
+    public class Report_Chart
+    {
+        public Guid id { get; set; }
+        public string name { get; set; }       
+        public int count_visit { get; set; }
+        public int count_store_order { get; set; }
+        public int count_order { get; set; }
+        public Int64 sum_order_price { get; set; }
+    }
+
     public class Report
     {
-        public List<Report_TongHop> report_tonghop { get; set; }
-        public List<Report_Tuyen> report_tuyen { get; set; }
-        public List<Report_NVBH> report_nvbh { get; set; }
-        public List<province_item> provinces { get; set; }
-
-        public List<Route> routes { get; set; }
-        public List<RouteUser> routes_user { get; internal set; }
+        public List<Report_Chart> data_chart { get; set; }
+        public List<Report_Activity> data_activity { get;  set; }
     }
     public class Report_TongHop
     {

@@ -27,20 +27,20 @@ namespace albus_api.Controllers
         [HttpGet("values")]
         public async Task<ActionResult<List<FilterFieldNameValues>>> GetValues(string module)
         {
-            var result =new List<FilterFieldNameValues>();
+            var result = new List<FilterFieldNameValues>();
             string sessionID
              = Request.Headers["Session-ID"];
             try
             {
                 ClientServices Services = new ClientServices(sessionID);
 
-                if(module=="inventory_adjustments")
+                if (module == "inventory_adjustments")
                 {
                     var query = DataAccess.DataQuery.Create("dms", "ws_stocks_list_by_permission");
-                     query += DataAccess.DataQuery.Create("dms", "ws_categories_get",new
-                     {
-                         module= "adjustment_reasons"
-                     });
+                    query += DataAccess.DataQuery.Create("dms", "ws_categories_get", new
+                    {
+                        module = "adjustment_reasons"
+                    });
                     var ds = await Services.ExecuteAsync(query);
                     if (ds == null)
                     {
@@ -49,15 +49,16 @@ namespace albus_api.Controllers
                     else
                     {
                         var stocks = new List<FilterValue>();
-                        foreach(DataRow row in ds.Tables[0].Rows)
+                        foreach (DataRow row in ds.Tables[0].Rows)
                         {
                             var stock = new FilterValue();
                             stock.id = row["id"].ToString();
-                            stock.value= row["name"].ToString();
+                            stock.value = row["name"].ToString();
                             stocks.Add(stock);
-                        }    
-                        result.Add(new FilterFieldNameValues(){
-                            field_name="stock_id",
+                        }
+                        result.Add(new FilterFieldNameValues()
+                        {
+                            field_name = "stock_id",
                             filter_values = stocks
                         });
 
@@ -252,7 +253,7 @@ namespace albus_api.Controllers
             }
         }
         [HttpPost()]
-        public async Task<ActionResult<List<Filter>>> PostItem(string module,string id,string name)
+        public async Task<ActionResult<List<Filter>>> PostItem(string module, string id, string name)
         {
             string sessionID
              = Request.Headers["Session-ID"];
@@ -261,14 +262,14 @@ namespace albus_api.Controllers
                 using (var reader = new StreamReader(Request.Body))
                 {
                     var body = reader.ReadToEnd();
-                    _logger.LogInformation(body);                              
+                    _logger.LogInformation(body);
                     ClientServices Services = new ClientServices(sessionID);
                     var query = DataAccess.DataQuery.Create("dms", "ws_filters_save", new
                     {
                         module,
                         id,
                         name,
-                        filter_expression =body
+                        filter_expression = body
                     });
                     query += DataAccess.DataQuery.Create("dms", "ws_filter_get", new
                     {
@@ -281,17 +282,17 @@ namespace albus_api.Controllers
                     }
                     else
                     {
-                        var result = ds.Tables[1].ToModel<Filter>();                      
+                        var result = ds.Tables[1].ToModel<Filter>();
                         foreach (var item in result)
                         {
                             item.filter_expressions = JsonConvert.DeserializeObject<List<FilterExpression>>(item.expressions);
                         }
-                        return result;                     
-                    }                 
+                        return result;
+                    }
                     // Do something
-                }             
+                }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }

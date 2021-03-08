@@ -182,7 +182,26 @@ namespace albus_api.Controllers
                         {
                             field_name = "stock_id",
                             filter_values = stocks
-                        });                        
+                        });
+
+                        var exportStatus = new List<FilterValue>();
+
+                        var item = new FilterValue();
+                        item.id = "0";
+                        item.value = "Chưa xuất";
+                        exportStatus.Add(item);
+
+                        var item2 = new FilterValue();
+                        item2.id = "1";
+                        item2.value = "Đã xuất";
+                        exportStatus.Add(item2);
+
+
+                        result.Add(new FilterFieldNameValues()
+                        {
+                            field_name = "is_export_stock",
+                            filter_values = exportStatus
+                        });
                     }
                 }
                 if (module == "visits")

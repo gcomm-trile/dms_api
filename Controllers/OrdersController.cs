@@ -28,7 +28,12 @@ namespace albus_api.Controllers
             string sessionID
               = Request.Headers["Session-ID"];
             ClientServices Services = new ClientServices(sessionID);
-            var query = DataAccess.DataQuery.Create("dms", "ws_ordermasters_list");
+            var query = DataAccess.DataQuery.Create("dms", "ws_ordermasters_list",
+                new
+                {
+                    filter_expression= filter == null ? "" : filter,
+                    search_text= searchText == null ? "" : searchText,
+                });
             var ds = Services.Execute(query);
             if (ds == null)
             {
@@ -65,5 +70,37 @@ namespace albus_api.Controllers
             return result;
 
         }
+
+        [HttpPost("xuatHang")]
+        public async Task<ActionResult> xuathang(
+          string id, string in_stock_id, int reason_id
+      )
+        {
+            string sessionID
+              = Request.Headers["Session-ID"];
+            ClientServices Services = new ClientServices(sessionID);
+            using (var reader = new StreamReader(Request.Body))
+            {
+                var body = reader.ReadToEnd();
+                _logger.LogInformation(body);
+                var query = DataAccess.DataQuery.Create("dms", "ws_ordermasters_xuathang", new
+                {
+                    id,
+
+                });
+                var ds = await Services.ExecuteAsync(query);
+                if (ds == null)
+                {
+                    return Ok(Services.LastError);
+                }
+                else
+                {
+                    return Ok("Ok");
+                }
+                // Do something
+            }
+
+        }
+
     }
 }
